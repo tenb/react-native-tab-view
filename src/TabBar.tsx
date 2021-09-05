@@ -133,6 +133,30 @@ export default class TabBar<T extends Route> extends React.Component<
     return tabStyle ? tabStyle.width : undefined;
   };
 
+  private getFlattenedTabMargin = (
+    style: StyleProp<ViewStyle>
+  ): [number, number] => {
+    const tabStyle = StyleSheet.flatten(style);
+    let marginLeft = 0;
+    let marginRight = 0;
+
+    if (!isNaN(Number(tabStyle.margin))) {
+      marginLeft = marginRight = Number(tabStyle.margin);
+    }
+    if (!isNaN(Number(tabStyle.marginHorizontal))) {
+      marginLeft = marginRight = Number(tabStyle.marginHorizontal);
+    }
+    if (!isNaN(Number(tabStyle.marginLeft))) {
+      marginLeft = Number(tabStyle.marginLeft);
+    }
+
+    if (!isNaN(Number(tabStyle.marginRight))) {
+      marginRight = Number(tabStyle.marginRight);
+    }
+
+    return [marginLeft, marginRight];
+  };
+
   private getComputedTabWidth = (
     index: number,
     layout: Layout,
@@ -335,6 +359,7 @@ export default class TabBar<T extends Route> extends React.Component<
             navigationState,
             jumpTo,
             width: isWidthDynamic ? 'auto' : `${100 / routes.length}%`,
+            margin: this.getFlattenedTabMargin(tabStyle),
             style: indicatorStyle,
             getTabWidth: (i: number) =>
               this.getComputedTabWidth(

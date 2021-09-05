@@ -16,6 +16,7 @@ export type GetTabWidth = (index: number) => number;
 export type Props<T extends Route> = SceneRendererProps & {
   navigationState: NavigationState<T>;
   width: string | number;
+  margin: [number, number];
   style?: StyleProp<ViewStyle>;
   getTabWidth: GetTabWidth;
 };
@@ -79,8 +80,15 @@ export default class TabBarIndicator<T extends Route> extends React.Component<
   };
 
   render() {
-    const { position, navigationState, getTabWidth, width, style, layout } =
-      this.props;
+    const {
+      position,
+      navigationState,
+      getTabWidth,
+      width,
+      margin,
+      style,
+      layout,
+    } = this.props;
     const { routes } = navigationState;
 
     const transform = [];
@@ -96,7 +104,9 @@ export default class TabBarIndicator<T extends Route> extends React.Component<
 
     if (width === 'auto') {
       const inputRange = routes.map((_, i) => i);
-      const outputRange = inputRange.map(getTabWidth);
+      const outputRange = inputRange
+        .map(getTabWidth)
+        .map((w) => w - (margin[0] + margin[1]));
 
       transform.push(
         {
@@ -127,6 +137,7 @@ export default class TabBarIndicator<T extends Route> extends React.Component<
             : { left: `${(100 / routes.length) * navigationState.index}%` },
           { transform },
           width === 'auto' ? { opacity: this.opacity } : null,
+          { marginLeft: margin[0], marginRight: margin[0] },
           style,
         ]}
       />
